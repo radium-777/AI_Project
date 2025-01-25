@@ -1,4 +1,4 @@
 import torch
-import NumPy as np
+import numpy as np
 
 print("hello world")
