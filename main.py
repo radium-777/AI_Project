@@ -2,6 +2,7 @@ import sys
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QKeySequence, QShortcut
 from PySide6.QtCore import Qt
+import time
 from window import ChatOverlay
 
 
@@ -24,8 +25,8 @@ def main():
 def capture_screenshot():
     # Capture the entire screen
     screenshot = pyautogui.screenshot()
-    screenshot.save("screenshot.png")
-    print("Screenshot saved as 'screenshot.png'")
+    screenshot.save("./.local/"+str(time.time)+".png")
+    
 
 if __name__ == "__main__":
     main()
