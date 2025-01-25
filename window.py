@@ -1,4 +1,5 @@
 import sys
+import time
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget
 from PySide6.QtCore import Qt
 
@@ -79,3 +80,16 @@ class ChatOverlay(QMainWindow):
             str: A single string with all messages separated by newlines.
         """
         return "\n".join(self.messages)
+
+    def toggle_visibility(self):
+        """Toggle the visibility of the window."""
+        if self.isVisible():
+            self.hide()
+        else:
+            self.show()
+    
+    def wait_for_message(self):
+        l = len(self.messages)
+        while l == len(self.messages):
+            time.sleep()
+        return
