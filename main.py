@@ -25,7 +25,9 @@ def main():
 def capture_screenshot():
     # Capture the entire screen
     screenshot = pyautogui.screenshot()
-    screenshot.save("./.local/"+str(time.time)+".png")
+    path = "./.local/"+str(time.time)+".png"
+    screenshot.save(path)
+    return path
     
 
 if __name__ == "__main__":
