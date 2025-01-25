@@ -21,6 +21,11 @@ def main():
     
     sys.exit(app.exec_())
 
+def capture_screenshot():
+    # Capture the entire screen
+    screenshot = pyautogui.screenshot()
+    screenshot.save("screenshot.png")
+    print("Screenshot saved as 'screenshot.png'")
 
 if __name__ == "__main__":
     main()
