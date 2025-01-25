@@ -1,0 +1,28 @@
+/* Main window styling */
+QMainWindow {
+    background-color: #b0b0b0; /* Light gray */
+    border-radius: 15px;
+    padding: 10px;
+}
+
+/* Chat display area */
+#chatDisplay {
+    background-color: #3a3a3a; /* Dark gray */
+    color: #ffffff;           /* White text */
+    border: 1px solid #5a5a5a;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Chat input box */
+#chatInput {
+    background-color: #ffffff; /* White */
+    color: #000000;           /* Black text */
+    border: 1px solid #aaaaaa;
+    border-radius: 10px;
+    padding: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
