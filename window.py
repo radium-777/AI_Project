@@ -99,3 +99,50 @@ class ChatOverlay(QMainWindow):
             self.hide()
         else:
             self.show()
+    
+            # Enable mouse tracking for resizing
+        self.setMouseTracking(True)
+        self._is_dragging = False
+        self._drag_start_position = None
+        self._resize_start_position = None
+        self._resizing = False
+        self._resize_margin = 10  # Margin in pixels for detecting resize
+        
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if self._is_in_resize_area(event.pos()):
+                self._resizing = True
+                self._resize_start_position = event.globalPos()
+                self._start_geometry = self.geometry()
+            else:
+                self._is_dragging = True
+                self._drag_start_position = event.globalPos() - self.frameGeometry().topLeft()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self._resizing:
+            # Handle resizing
+            delta = event.globalPos() - self._resize_start_position
+            new_rect = self._start_geometry.adjusted(0, 0, delta.x(), delta.y())
+            self.setGeometry(new_rect)
+        elif self._is_dragging:
+            # Handle dragging
+            self.move(event.globalPos() - self._drag_start_position)
+        elif self._is_in_resize_area(event.pos()):
+            # Update cursor if in resize area
+            self.setCursor(Qt.SizeFDiagCursor)
+        else:
+            self.setCursor(Qt.ArrowCursor)
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._is_dragging = False
+            self._resizing = False
+        super().mouseReleaseEvent(event)
+
+    def _is_in_resize_area(self, pos):
+        """Check if the mouse position is in the resize margin."""
+        rect = self.rect()
+        return rect.right() - self._resize_margin <= pos.x() <= rect.right() and \
+               rect.bottom() - self._resize_margin <= pos.y() <= rect.bottom()
