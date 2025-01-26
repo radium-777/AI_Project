@@ -3,7 +3,7 @@ import time
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget, QSizeGrip
 from PySide6.QtCore import Qt
 import keyboard
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 
 def empty_func():
     print("")
@@ -11,10 +11,14 @@ def empty_func():
 class ChatOverlay(QMainWindow):
 
     screenshot_signal = Signal()
+    messages_update_signal = Signal()
+    ocr_data_update_signal = Signal()
 
     def __init__(self):
         super().__init__()
         self.callback_user_message_trigger = empty_func
+        self.callback_update_messages_file = empty_func
+        self.callback_update_ocr_data_file = empty_func
         self.messages = []  # List to store messages
         self.init_ui()
 
@@ -72,6 +76,7 @@ class ChatOverlay(QMainWindow):
             message (str): The message to add.
         """
         self.messages.append(message)  # Add to the message list
+
         self.update_chat_display()
 
     def update_chat_display(self):
@@ -79,6 +84,8 @@ class ChatOverlay(QMainWindow):
         self.chat_display.clear()
         self.chat_display.append("<br>".join(self.messages))
         self.show()
+        self.messages_update_signal.emit()
+        self.ocr_data_update_signal.emit()
 
     def get_message_list(self):
         """

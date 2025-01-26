@@ -16,17 +16,10 @@ chat_api = ChatAPI()
 
 ocr_data = []
 
-class EventHandler(QObject):
-    messages_update_signal = Signal()
-    ocr_data_update_signal = Signal()
-
-event_handler = EventHandler()
-
 cwd = os.getcwd()
 
 if not os.path.isdir(cwd+"/.local/"):
     os.mkdir(cwd+"/.local/")
-
 
 def main():
     if os.path.isfile(cwd+"/.local/message_history.pkl"):
@@ -38,15 +31,16 @@ def main():
     # Create the chat overlay window
     chat_overlay.show()
     chat_overlay.callback_user_message_trigger = callback_user_message_trigger
+    chat_overlay.callback_update_messages_file = update_messages_file
+    chat_overlay.callback_update_ocr_data_file = update_ocr_data_file
+    chat_overlay.messages_update_signal.connect(chat_overlay.callback_update_messages_file)
+    chat_overlay.ocr_data_update_signal.connect(chat_overlay.callback_update_ocr_data_file)
 
     # Simulate adding messages from an external API
     chat_overlay.add_message("ADAM: How can I help you?")
 
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
     keyboard.add_hotkey("alt+h", capture_screenshot)
-
-    event_handler.messages_update_signal.connect(update_messages_file)
-    event_handler.ocr_data_update_signal.connect(update_ocr_data_file)
 
     sys.exit(app.exec_())
 
@@ -62,17 +56,19 @@ def capture_screenshot():
     path = cwd+"/.local/"+filename
     screenshot.save(path)
 
-    file = open(path, "rb")
-    ocrstring = do_ocr(file)
-    ocr_data.append(ocrstring)
-
     chat_overlay.messages.append("[IMAGE]")
 
     chat_overlay.screenshot_signal.emit()
 
+    file = open(path, "rb")
+    ocrstring = do_ocr(file)
+    ocr_data.append(ocrstring)
+
     chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
 
     chat_overlay.screenshot_signal.emit()
+    chat_overlay.messages_update_signal.emit()
+    chat_overlay.ocr_data_update_signal.emit()
 
     return path
     
