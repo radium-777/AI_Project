@@ -1,6 +1,6 @@
 import sys
 import time
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget, QSizeGrip
 from PySide6.QtCore import Qt
 import keyboard
 from PySide6.QtCore import Signal
@@ -49,15 +49,12 @@ class ChatOverlay(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-
-        self.screenshot_signal.connect(self.update_chat_display)
-
-        self.setMouseTracking(True)
+        size_grip = QSizeGrip(self)
+        layout.addWidget(size_grip, alignment=Qt.AlignBottom | Qt.AlignRight)
         self._is_dragging = False
         self._drag_start_position = None
-        self._resize_start_position = None
-        self._resizing = False
-        self._resize_margin = 100  # Margin in pixels for detecting resize
+
+        self.screenshot_signal.connect(self.update_chat_display)
 
     def handle_user_message(self):
         # Add the typed message to the messages list and update the display
@@ -107,29 +104,18 @@ class ChatOverlay(QMainWindow):
             self.hide()
         else:
             self.show()
-        
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            if self._is_in_resize_area(event.pos()):
-                self._resizing = True
-                self._resize_start_position = event.globalPos()
-                self._start_geometry = self.geometry()
-            else:
+            if not self._is_in_resize_area(event.pos()):
                 self._is_dragging = True
                 self._drag_start_position = event.globalPos() - self.frameGeometry().topLeft()
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self._resizing:
-            # Handle resizing
-            delta = event.globalPos() - self._resize_start_position
-            new_rect = self._start_geometry.adjusted(0, 0, delta.x(), delta.y())
-            self.setGeometry(new_rect)
-        elif self._is_dragging:
-            # Handle dragging
+        if self._is_dragging:
             self.move(event.globalPos() - self._drag_start_position)
         elif self._is_in_resize_area(event.pos()):
-            # Update cursor if in resize area
             self.setCursor(Qt.SizeFDiagCursor)
         else:
             self.setCursor(Qt.ArrowCursor)
@@ -138,17 +124,11 @@ class ChatOverlay(QMainWindow):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self._is_dragging = False
-            self._resizing = False
         super().mouseReleaseEvent(event)
 
     def _is_in_resize_area(self, pos):
-        """Check if the mouse position is in the resize margin."""
+        """Check if the mouse position is in the bottom-right resize area."""
         rect = self.rect()
-        return (rect.right() - self._resize_margin <= pos.x() <= rect.right() or \
-                rect.right() + self._resize_margin >= pos.x() >= rect.right()) and \
-               (rect.top() - self._resize_margin <= pos.x() <= rect.top() or \
-                rect.top() + self._resize_margin >= pos.x() >= rect.top()) or \
-                (rect.left() - self._resize_margin <= pos.x() <= rect.left() or \
-                rect.left() + self._resize_margin >= pos.x() >= rect.left()) and \
-               (rect.top() - self._resize_margin <= pos.x() <= rect.top() or \
-                rect.top() + self._resize_margin >= pos.x() >= rect.top())
+        resize_margin = 10  # Margin for resize area
+        return rect.right() - resize_margin <= pos.x() <= rect.right() and \
+               rect.bottom() - resize_margin <= pos.y() <= rect.bottom()
