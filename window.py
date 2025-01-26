@@ -4,8 +4,9 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit,
 from PySide6.QtCore import Qt
 
 class ChatOverlay(QMainWindow):
-    def __init__(self):
+    def __init__(self, callback_user_message_trigger):
         super().__init__()
+        self.callback_user_message_trigger = callback_user_message_trigger
         self.messages = []  # List to store messages
         self.init_ui()
 
@@ -46,6 +47,8 @@ class ChatOverlay(QMainWindow):
         if message:
             self.add_message(f"You: {message}")
         self.chat_input.clear()
+
+        self.callback_user_message_trigger(self)
 
     def add_message(self, message: str):
         """ 

@@ -11,7 +11,7 @@ def main():
     app = QApplication(sys.argv)
 
     # Create the chat overlay window
-    chat_overlay = ChatOverlay()
+    chat_overlay = ChatOverlay(callback_user_message_trigger)
     chat_overlay.show()
 
     # Simulate adding messages from an external API
@@ -19,8 +19,7 @@ def main():
     chat_overlay.add_message("API: Feel free to type a message.")
 
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
-
-    chat_overlay.wait_for_message()
+    keyboard.add_hotkey("alt+-", capture_screenshot())
 
     print("Done")
 
@@ -42,6 +41,8 @@ def capture_screenshot():
     screenshot.save(path)
     return path
     
+def callback_user_message_trigger(chat_overlay):
+        print("User sent message: " + chat_overlay.messages[-1])
 
 if __name__ == "__main__":
     main()
