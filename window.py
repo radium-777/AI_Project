@@ -52,6 +52,13 @@ class ChatOverlay(QMainWindow):
 
         self.screenshot_signal.connect(self.update_chat_display)
 
+        self.setMouseTracking(True)
+        self._is_dragging = False
+        self._drag_start_position = None
+        self._resize_start_position = None
+        self._resizing = False
+        self._resize_margin = 100  # Margin in pixels for detecting resize
+
     def handle_user_message(self):
         # Add the typed message to the messages list and update the display
         message = self.chat_input.text().strip()
@@ -100,14 +107,6 @@ class ChatOverlay(QMainWindow):
             self.hide()
         else:
             self.show()
-    
-            # Enable mouse tracking for resizing
-        self.setMouseTracking(True)
-        self._is_dragging = False
-        self._drag_start_position = None
-        self._resize_start_position = None
-        self._resizing = False
-        self._resize_margin = 10  # Margin in pixels for detecting resize
         
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -145,5 +144,11 @@ class ChatOverlay(QMainWindow):
     def _is_in_resize_area(self, pos):
         """Check if the mouse position is in the resize margin."""
         rect = self.rect()
-        return rect.right() - self._resize_margin <= pos.x() <= rect.right() and \
-               rect.bottom() - self._resize_margin <= pos.y() <= rect.bottom()
+        return (rect.right() - self._resize_margin <= pos.x() <= rect.right() or \
+                rect.right() + self._resize_margin >= pos.x() >= rect.right()) and \
+               (rect.top() - self._resize_margin <= pos.x() <= rect.top() or \
+                rect.top() + self._resize_margin >= pos.x() >= rect.top()) or \
+                (rect.left() - self._resize_margin <= pos.x() <= rect.left() or \
+                rect.left() + self._resize_margin >= pos.x() >= rect.left()) and \
+               (rect.top() - self._resize_margin <= pos.x() <= rect.top() or \
+                rect.top() + self._resize_margin >= pos.x() >= rect.top())

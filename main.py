@@ -42,12 +42,11 @@ def main():
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
     keyboard.add_hotkey("alt+h", capture_screenshot)
 
-    messages_update_signal.connect(update_messages_file)
-    ocr_data_update_signal.connect(update_ocr_data_file)
-
     sys.exit(app.exec_())
 
 def capture_screenshot():
+    chat_overlay.hide()
+
     # Capture the entire screen
     screenshot = pyautogui.screenshot()
 
