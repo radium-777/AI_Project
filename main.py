@@ -7,7 +7,7 @@ import keyboard
 from window import ChatOverlay
 from ocr import do_ocr
 from chatapi import ChatAPI
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject, QEvent
 import pickle
 
 app = QApplication(sys.argv)
@@ -16,8 +16,11 @@ chat_api = ChatAPI()
 
 ocr_data = []
 
-messages_update_signal = Signal()
-ocr_data_update_signal = Signal()
+class EventHandler(QObject):
+    messages_update_signal = Signal()
+    ocr_data_update_signal = Signal()
+
+event_handler = EventHandler()
 
 cwd = os.getcwd()
 
@@ -37,13 +40,13 @@ def main():
     chat_overlay.callback_user_message_trigger = callback_user_message_trigger
 
     # Simulate adding messages from an external API
-    chat_overlay.add_message("API: How can I help you?")
+    chat_overlay.add_message("ADAM: How can I help you?")
 
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
     keyboard.add_hotkey("alt+h", capture_screenshot)
 
-    messages_update_signal.connect(update_messages_file)
-    ocr_data_update_signal.connect(update_ocr_data_file)
+    event_handler.messages_update_signal.connect(update_messages_file)
+    event_handler.ocr_data_update_signal.connect(update_ocr_data_file)
 
     sys.exit(app.exec_())
 
