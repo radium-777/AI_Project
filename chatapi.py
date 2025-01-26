@@ -2,10 +2,16 @@ from openai import OpenAI
 import base64
 from pathlib import Path
 from window import ChatOverlay
+import os
+
+cwd = os.getcwd()
+file_path = cwd+"/.secret/api_key.txt"
+with open(file_path, "r") as file:
+    key = file.read()
 
 client = OpenAI(
     base_url="https://api.omnistack.sh/openai/v1",
-    api_key="osk_134bde8d308de143fb0186ebf06d33e8"
+    api_key=key
 )
 
 class ChatAPI():
