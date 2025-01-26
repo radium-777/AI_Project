@@ -14,12 +14,14 @@ app = QApplication(sys.argv)
 chat_overlay = ChatOverlay()
 chat_api = ChatAPI()
 
-ocr_data = []
+ocr_data = {}
 
 cwd = os.getcwd()
 
 if not os.path.isdir(cwd+"/.local/"):
     os.mkdir(cwd+"/.local/")
+if not os.path.isdir(cwd+"/files/"):
+    os.mkdir(cwd+"/files/")
 
 def main():
     if os.path.isfile(cwd+"/.local/message_history.pkl"):
@@ -52,29 +54,60 @@ def capture_screenshot():
     screenshot = pyautogui.screenshot()
 
     timestamp = time.strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp}.png"
+    filename = f"SCREENSHOT_{timestamp}.png"
 
     path = cwd+"/.local/"+filename
     screenshot.save(path)
-
+    
     chat_overlay.messages.append("[IMAGE]")
 
     chat_overlay.screenshot_signal.emit()
 
     file = open(path, "rb")
     ocrstring = do_ocr(file)
-    ocr_data.append(ocrstring)
 
-    chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
+    ocr_data[filename] = ocrstring
 
-    chat_overlay.screenshot_signal.emit()
-    chat_overlay.messages_update_signal.emit()
-    chat_overlay.ocr_data_update_signal.emit()
+    response = chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data))
+
+    cut_response = parse(response)
+
+    if len(cut_response) > 0:
+        chat_overlay.messages.append("ADAM: " + cut_response)
+        chat_overlay.screenshot_signal.emit()
+        chat_overlay.messages_update_signal.emit()
+        chat_overlay.ocr_data_update_signal.emit()
+
+        new_response = find_files(cwd+"/files/")
+        chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
+
+    else:
+        chat_overlay.messages.append("ADAM: " + response)
+        chat_overlay.screenshot_signal.emit()
+        chat_overlay.messages_update_signal.emit()
+        chat_overlay.ocr_data_update_signal.emit()
 
     return path
     
 def callback_user_message_trigger(chat_overlay):
-    chat_overlay.add_message("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
+    response = chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data))
+    
+    cut_response = parse(response)
+
+    if len(cut_response) > 0:
+        chat_overlay.messages.append("ADAM: " + cut_response)
+        chat_overlay.screenshot_signal.emit()
+        chat_overlay.messages_update_signal.emit()
+        chat_overlay.ocr_data_update_signal.emit()
+
+        new_response = find_files(cwd+"/files/")
+        chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
+
+    else:
+        chat_overlay.messages.append("ADAM: " + response)
+        chat_overlay.screenshot_signal.emit()
+        chat_overlay.messages_update_signal.emit()
+        chat_overlay.ocr_data_update_signal.emit()
 
 def update_messages_file():
     file_path = cwd+"/.local/message_history.pkl"
@@ -95,6 +128,29 @@ def restore_ocr_data_from_file():
     file_path = cwd+"/.local/ocr_data_history.pkl"
     with open(file_path, "rb") as file:
         ocr_data = pickle.load(file)
+
+def parse(message):
+    if message.endswith('/read_files'):
+        return message[:-len('/read_files')]
+    else:
+        return ""
+
+def find_files(directory):
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        # Check if it is a file
+        if os.path.isfile(file_path):
+            # Check if the file is an image based on its extension
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff')):
+                file = open(file_path, 'rb')
+                ocr_data[file_path] = do_ocr(file)
+            else:
+                # Process as a non-image file
+                file = open(file_path, 'r', encoding='utf-8')
+                ocr_data[file_path] = file.read()
+                
+        elif os.path.isdir(file_path):
+            find_files(file_path)
 
 if __name__ == "__main__":
     main()
