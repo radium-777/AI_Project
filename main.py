@@ -48,6 +48,8 @@ def main():
     sys.exit(app.exec_())
 
 def capture_screenshot():
+    chat_overlay.hide()
+
     # Capture the entire screen
     screenshot = pyautogui.screenshot()
 
