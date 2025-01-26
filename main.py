@@ -55,7 +55,7 @@ def capture_screenshot():
     return path
     
 def callback_user_message_trigger(chat_overlay):
-    chat_overlay.add_message("API: " + chat_api.messageQuery(str(chat_overlay.messages) + str(ocr_data), ""))
+    chat_overlay.add_message("API: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
 
 if __name__ == "__main__":
     main()
