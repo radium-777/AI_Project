@@ -3,7 +3,6 @@ import time
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget
 from PySide6.QtCore import Qt
 
-
 class ChatOverlay(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -49,7 +48,7 @@ class ChatOverlay(QMainWindow):
         self.chat_input.clear()
 
     def add_message(self, message: str):
-        """
+        """ 
         Add a message to the chat and update the display.
 
         Args:
@@ -91,5 +90,5 @@ class ChatOverlay(QMainWindow):
     def wait_for_message(self):
         l = len(self.messages)
         while l == len(self.messages):
-            time.sleep()
+            time.sleep(0.01)
         return
