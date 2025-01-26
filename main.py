@@ -5,6 +5,7 @@ import pyautogui
 import time
 import keyboard
 from window import ChatOverlay
+from ocr import do_ocr
 
 
 def main():
@@ -39,10 +40,14 @@ def capture_screenshot():
 
     path = cwd+"/.local/"+filename
     screenshot.save(path)
+
+    file = open(path, "rb")
+    print(do_ocr(file))
+
     return path
     
 def callback_user_message_trigger(chat_overlay):
-        print("User sent message: " + chat_overlay.messages[-1])
+    print("User sent message: " + chat_overlay.messages[-1])
 
 if __name__ == "__main__":
     main()
