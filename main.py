@@ -37,7 +37,8 @@ def main():
     chat_overlay.ocr_data_update_signal.connect(chat_overlay.callback_update_ocr_data_file)
 
     # Simulate adding messages from an external API
-    chat_overlay.add_message("ADAM: How can I help you?")
+    if len(chat_overlay.messages) == 0:
+        chat_overlay.add_message("ADAM: How can I help you?")
 
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
     keyboard.add_hotkey("alt+h", capture_screenshot)
