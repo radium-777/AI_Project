@@ -42,8 +42,8 @@ def main():
     if len(chat_overlay.messages) == 0:
         chat_overlay.add_message("ADAM: How can I help you?")
 
-    keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
-    keyboard.add_hotkey("alt+h", capture_screenshot)
+    keyboard.add_hotkey("alt+backspace", chat_overlay.toggle_visibility)
+    keyboard.add_hotkey("alt+-", capture_screenshot)
 
     sys.exit(app.exec_())
 
@@ -56,7 +56,7 @@ def capture_screenshot():
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     filename = f"SCREENSHOT_{timestamp}.png"
 
-    path = cwd+"/.local/"+filename
+    path = cwd+"/files/"+filename
     screenshot.save(path)
     
     chat_overlay.messages.append("[IMAGE]")
@@ -100,7 +100,7 @@ def callback_user_message_trigger(chat_overlay):
         chat_overlay.messages_update_signal.emit()
         chat_overlay.ocr_data_update_signal.emit()
 
-        new_response = find_files(cwd+"/files/")
+        find_files(cwd+"/files/")
         chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
 
     else:

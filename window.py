@@ -63,10 +63,10 @@ class ChatOverlay(QMainWindow):
     def handle_user_message(self):
         # Add the typed message to the messages list and update the display
         message = self.chat_input.text().strip()
-        if message:
+        if message and (message != "") and (message != "\n"):
             self.add_message(f"Me: {message}")
-        self.chat_input.clear()
-        self.callback_user_message_trigger(self)
+            self.chat_input.clear()
+            self.callback_user_message_trigger(self)
 
     def add_message(self, message: str):
         """ 
