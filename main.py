@@ -28,6 +28,7 @@ if not os.path.isdir(cwd+"/.local/"):
 def main():
     if os.path.isfile(cwd+"/.local/message_history.pkl"):
         restore_messages_from_file()
+        chat_overlay.screenshot_signal.emit()
     if os.path.isfile(cwd+"/.local/ocr_data_history.pkl"):
         restore_ocr_data_from_file()
 
