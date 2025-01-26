@@ -20,7 +20,7 @@ def main():
     chat_overlay.add_message("API: Feel free to type a message.")
 
     keyboard.add_hotkey("alt+g", chat_overlay.toggle_visibility)
-    keyboard.add_hotkey("alt+-", capture_screenshot())
+    keyboard.add_hotkey("alt+h", capture_screenshot)
 
     print("Done")
 

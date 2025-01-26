@@ -13,12 +13,6 @@ def do_ocr(file):
     try:
         file_bytes = file.read()
 
-        #if not file_bytes:
-         #   raise Exception("File is empty.")
-
-        #if not file.content_type.startswith("image/"):
-         #   raise Exception("Not an image.")
-
         # Decode image bytes to a Numpy array
         nparr = np.frombuffer(file_bytes, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
