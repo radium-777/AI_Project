@@ -68,6 +68,8 @@ def capture_screenshot():
 
     chat_overlay.messages.append("[IMAGE]")
 
+    chat_overlay.screenshot_signal.emit()
+
     chat_overlay.messages.append("ADAM: " + chat_api.messageQuery(str(chat_overlay.messages), str(ocr_data)))
 
     chat_overlay.screenshot_signal.emit()
