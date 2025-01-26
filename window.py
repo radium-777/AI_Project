@@ -74,6 +74,7 @@ class ChatOverlay(QMainWindow):
         """Update the chat display with all messages."""
         self.chat_display.clear()
         self.chat_display.append("<br>".join(self.messages))
+        self.show()
 
     def get_message_list(self):
         """
