@@ -2,11 +2,19 @@ import sys
 import time
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QLineEdit, QWidget
 from PySide6.QtCore import Qt
+import keyboard
+from PySide6.QtCore import Signal
+
+def empty_func():
+    print("")
 
 class ChatOverlay(QMainWindow):
-    def __init__(self, callback_user_message_trigger):
+
+    screenshot_signal = Signal()
+
+    def __init__(self):
         super().__init__()
-        self.callback_user_message_trigger = callback_user_message_trigger
+        self.callback_user_message_trigger = empty_func
         self.messages = []  # List to store messages
         self.init_ui()
 
@@ -41,13 +49,15 @@ class ChatOverlay(QMainWindow):
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
+
+        self.screenshot_signal.connect(self.update_chat_display)
+
     def handle_user_message(self):
         # Add the typed message to the messages list and update the display
         message = self.chat_input.text().strip()
         if message:
-            self.add_message(f"You: {message}")
+            self.add_message(f"Me: {message}")
         self.chat_input.clear()
-
         self.callback_user_message_trigger(self)
 
     def add_message(self, message: str):
@@ -89,9 +99,3 @@ class ChatOverlay(QMainWindow):
             self.hide()
         else:
             self.show()
-    
-    def wait_for_message(self):
-        l = len(self.messages)
-        while l == len(self.messages):
-            time.sleep(0.01)
-        return

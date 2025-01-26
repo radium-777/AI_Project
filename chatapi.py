@@ -9,7 +9,7 @@ client = OpenAI(
 )
 
 class ChatAPI():
-    def messageQuery(chatHistory, ocrData):
+    def messageQuery(self, chatHistory, ocrData):
         history = ""
         for i in chatHistory:
             history = history + "\n" + i
@@ -28,6 +28,7 @@ class ChatAPI():
                             "You will receive an assistant prompt at every iteration of your completion."
                             "In it will reside the entire chat history with the current user."
                             "Use this to store memories from the user, past data, and anything else already discussed."
+                            "Any line that begins with 'API:' is a message you wrote, any other message is from the user."
                             "The last entry in the prompt will be the user's most recent response or prompt to you."
                             "This is what you should respond to at any given iteration of this chat"
                             "You will also receive input under the 'user' role under EVERY iteration. This will ONLY come in the form of text output from an OCR algorithm."
